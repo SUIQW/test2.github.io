@@ -27,7 +27,7 @@ jobs:
             ${{ runner.os }}-gems-
 
       # 部署 Action 升级到最新版（v0.5.1 较旧，建议使用最新 tag）
-      - uses: jeffreytse/jekyll-deploy-action@v0.5.3  # 检查并使用最新版本
+      - uses: jeffreytse/jekyll-deploy-action@v0.5.1  # 检查并使用最新版本
         with:
           provider: 'github'
           token: ${{ secrets.GITHUB_TOKEN }}

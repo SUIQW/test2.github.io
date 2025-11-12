@@ -3,15 +3,22 @@ name: Github Pages
 on:
   push:
     branches:
-      - master  # Here source code branch is `master`, it could be other branch
+      - master  # 源码分支，根据实际情况调整
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4  # 升级到最新版 checkout Action
 
-      # Use GitHub Actions' cache to cache dependencies on servers
+      # 明确设置 Ruby 环境（避免依赖旧版本）
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'  # 使用较新的 Ruby 版本
+          bundler-cache: true  # 缓存依赖，加速构建
+
+      # 缓存依赖（可选，与 bundler-cache 配合使用）
       - uses: actions/cache@v4
         with:
           path: vendor/bundle
@@ -19,15 +26,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gems-
 
-      # Use GitHub Deploy Action to build and deploy to Github
-      - uses: jeffreytse/jekyll-deploy-action@v0.5.1
+      # 部署 Action 升级到最新版（v0.5.1 较旧，建议使用最新 tag）
+      - uses: jeffreytse/jekyll-deploy-action@v0.5.4  # 检查并使用最新版本
         with:
           provider: 'github'
-          token: ${{ secrets.GITHUB_TOKEN }} # It's your Personal Access Token(PAT)
-          repository: ''             # Default is current repository
-          branch: 'gh-pages'         # Default is gh-pages for github provider
-          jekyll_src: './'           # Default is root directory
-          jekyll_cfg: '_config.yml'  # Default is _config.yml
-          jekyll_baseurl: '/jekyll-theme-yat'  # Default is empty
-          cname: ''                  # Default is to not use a cname
-          actor: ''                  # Default is the GITHUB_ACTOR
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ''  # 默认为当前仓库，无需修改
+          branch: 'gh-pages'  # 部署到 gh-pages 分支
+          jekyll_src: './'  # 源码目录
+          jekyll_cfg: '_config.yml'  # 配置文件路径
+          jekyll_baseurl: ''  # 如果站点直接部署在域名根路径，设为空
+          cname: ''  # 如需绑定自定义域名，填写域名（如 example.com）
+          actor: ''  # 默认为 GITHUB_ACTOR，无需修改
